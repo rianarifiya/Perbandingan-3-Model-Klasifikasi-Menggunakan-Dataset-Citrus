@@ -1,6 +1,5 @@
 # 🍊Klasifikasi Buah: Orange vs Grapefruit
 
-> **Ujian Tengah Semester – Machine Learning**  
 > Perbandingan tiga algoritma klasifikasi menggunakan dataset Citrus dari Kaggle
 
 ---
