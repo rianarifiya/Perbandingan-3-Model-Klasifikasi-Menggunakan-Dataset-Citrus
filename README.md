@@ -1,4 +1,4 @@
-# 🍊 UTS – Klasifikasi Buah: Orange vs Grapefruit
+# 🍊Klasifikasi Buah: Orange vs Grapefruit
 
 > **Ujian Tengah Semester – Machine Learning**  
 > Perbandingan tiga algoritma klasifikasi menggunakan dataset Citrus dari Kaggle
@@ -8,42 +8,14 @@
 ## 📂 Struktur Proyek
 
 ```
-uts_klasifikasi/
+Perbandingan Model Klasifikasi/
 ├── citrus.csv                          # Dataset dari Kaggle
 ├── README.md                           # Dokumentasi ini
 │
-├── klasifikasi_naive_bayes.py          # Model 1: Naive Bayes
-├── klasifikasi_decision_tree.py        # Model 2: Decision Tree
-├── klasifikasi_svm.py                  # Model 3: Support Vector Machine
-│
-├── [Output Naive Bayes]
-│   ├── nb_dist_diameter.png
-│   ├── nb_dist_weight.png
-│   ├── nb_heatmap_korelasi.png
-│   ├── nb_scatter_diameter_weight.png
-│   ├── nb_confusion_matrix.png
-│   ├── nb_precision_recall_curve.png
-│   └── nb_roc_curve.png
-│
-├── [Output Decision Tree]
-│   ├── dt_dist_diameter.png
-│   ├── dt_dist_weight.png
-│   ├── dt_heatmap_korelasi.png
-│   ├── dt_scatter_diameter_weight.png
-│   ├── dt_visualisasi_pohon.png
-│   ├── dt_feature_importance.png
-│   ├── dt_confusion_matrix.png
-│   ├── dt_precision_recall_curve.png
-│   └── dt_roc_curve.png
-│
-└── [Output SVM]
-    ├── svm_dist_diameter.png
-    ├── svm_dist_weight.png
-    ├── svm_heatmap_korelasi.png
-    ├── svm_scatter_diameter_weight.png
-    ├── svm_confusion_matrix.png
-    ├── svm_precision_recall_curve.png
-    └── svm_roc_curve.png
+├── Citrus_Klasifikasi Model Decision Tree.ipynb    # Model 1: Naive Bayes
+├── Citrus_Klasifikasi Model Naive Bayes.ipynb      # Model 2: Decision Tree
+└── Citrus_Klasifikasi Model SVM.ipynb              # Model 3: Support Vector Machine
+
 ```
 
 ---
@@ -98,16 +70,24 @@ Menampilkan distribusi dua fitur utama menggunakan `sns.distplot()`:
 #### Label Encoding
 Kolom `name` yang bertipe string diubah menjadi angka menggunakan `LabelEncoder`:
 ```python
+# Label encoding pada kolom name yang merupakan target
 le = LabelEncoder()
-df_citrus['name'] = le.fit_transform(df_citrus['name'])
+df['name'] = le.fit_transform(df['name'])
 # grapefruit = 0, orange = 1
+print('Hasil Label Encoding', dict(zip(['grapefruit', 'orange'], le.transform(['grapefruit', 'orange']))))
 ```
 
 #### Correlation Matrix & Heatmap
 Menghitung korelasi antar fitur untuk memahami hubungan antar variabel:
 ```python
-df_citrus.corr()
-sns.heatmap(df_citrus.corr(), annot=True, fmt='.2f', cmap='coolwarm')
+# Correlation matrix
+corr_matrix = df.corr()
+
+# Heatmap korelasi
+sns.heatmap(df.corr(), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('Heatmap Korelasi antar fitur')
+plt.tight_layout()
+plt.show()
 ```
 Dari hasil korelasi terlihat bahwa `diameter` dan `weight` memiliki korelasi yang sangat kuat (-0.77) terhadap label kelas `name`.
 
@@ -120,22 +100,31 @@ Sebelum split, ditampilkan scatter plot hubungan antara `diameter` dan `weight` 
 
 #### Definisi Fitur dan Target
 ```python
-X = df_citrus[['diameter', 'weight', 'red', 'green', 'blue']].values  # fitur
-y = df_citrus['name'].values   # target: 0=grapefruit, 1=orange
+# Split data into independent/dependent variables
+X = df[['diameter', 'weight', 'red', 'green', 'blue']].values #fitur
+Y = df['name'].values #target: 0=grapefruit, 1=orange
 ```
 
 #### Train-Test Split (75:25)
 ```python
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42)
-# Data train: 7.500 | Data test: 2.500
+# Split data into Train/Test sets (80% train, 20% test)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+
+# Print jumlah data train dan data test
+print('Jumlah data train:', len(X_train))
+print('Jumlah data test:', len(X_test))
+
+# Data train: 8.000 | Data test: 2.000
 ```
 
 #### Feature Scaling
 ```python
-sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
-X_test  = sc.transform(X_test)
+importances = pd.Series(classifier.feature_importances_, index=feature_names).sort_values(ascending=True)
+importances.plot(kind='barh', color='steelblue')
+plt.xlabel('Importance Score')
+plt.title('Feature Importance - Decision Tree')
+plt.tight_layout()
+plt.show()
 ```
 > **Catatan:** Scaling penting untuk Naive Bayes dan SVM agar semua fitur berada pada skala yang sama. Untuk Decision Tree, scaling tidak wajib namun tetap dilakukan untuk konsistensi.
 
@@ -143,7 +132,7 @@ X_test  = sc.transform(X_test)
 
 ### 3. Membuat Model Klasifikasi
 
-#### 🌳 Model 1 — Decision Tree (`klasifikasi_decision_tree.py`)
+#### 🌳 Model 1 — Decision Tree (`Citrus_Klasifikasi Model Decision Tree.ipynb`)
 
 ```python
 from sklearn.tree import DecisionTreeClassifier
@@ -163,7 +152,7 @@ File ini juga menghasilkan visualisasi tambahan:
 
 ---
 
-#### 📊 Model 2 — Naive Bayes (`klasifikasi_naive_bayes.py`)
+#### 📊 Model 2 — Naive Bayes (`Citrus_Klasifikasi Model Naive Bayes.ipynb`)
 
 ```python
 from sklearn.naive_bayes import GaussianNB
@@ -177,7 +166,7 @@ classifier.fit(X_train, y_train)
 
 ---
 
-#### 🤖 Model 3 — SVM (`klasifikasi_svm.py`)
+#### 🤖 Model 3 — SVM (`Citrus_Klasifikasi Model SVM.ipynb`)
 
 ```python
 from sklearn.svm import SVC
@@ -200,17 +189,22 @@ classifier.fit(X_train, y_train)
 Setiap model menghasilkan laporan yang sama:
 
 ```python
-# Prediksi
-y_pred = classifier.predict(X_test)
+# Prediction
+Y_pred = classifier.predict(X_test)
+print(np.concatenate((Y_pred.reshape(len(Y_pred), 1), Y_test.reshape(len(Y_test), 1)), 1))
 
 # Accuracy
-accuracy_score(y_test, y_pred)
+accuracy = accuracy_score(Y_test, Y_pred)
+print('Accuracy:', accuracy)
 
-# Classification Report (Precision, Recall, F1 per kelas)
-print(classification_report(y_test, y_pred, target_names=['grapefruit', 'orange']))
+# F1 score
+f1 = f1_score(Y_test, Y_pred)
+print('F1 Score:', f1)
 
-# F1 Score keseluruhan
-print(f"F1 Score : {f1_score(y_test, y_pred)}")
+# Classification report
+report = classification_report(Y_test, Y_pred, target_names=['grapefruit', 'orange'])
+print('Classification Report:')
+print(report)
 ```
 
 ---
@@ -219,23 +213,51 @@ print(f"F1 Score : {f1_score(y_test, y_pred)}")
 
 #### Confusion Matrix
 ```python
-cf_matrix = confusion_matrix(y_test, y_pred)
-sns.heatmap(cf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False)
+# Confusion matrix
+cf_matrix = confusion_matrix(Y_test, Y_pred)
+sns.heatmap(cf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,
+            xticklabels=['grapefruit', 'orange'],
+            yticklabels=['grapefruit', 'orange'])
+plt.title('Confusion Matrix - Decision Tree')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.tight_layout()
+plt.show()
 ```
 Menampilkan jumlah TP, TN, FP, FN dalam bentuk heatmap untuk melihat di mana model membuat kesalahan prediksi.
 
 #### Precision-Recall Curve
 ```python
+# Plot Precision-Recall Curve
 y_pred_proba = classifier.predict_proba(X_test)[:, 1]
-precision, recall, thresholds = precision_recall_curve(y_test, y_pred_proba)
-ax.plot(recall, precision)
+precision, recall, thresholds = precision_recall_curve(Y_test, y_pred_proba)
+
+fig, ax = plt.subplots()
+ax.plot(recall, precision, color='blue', label='Decision Tree')
+ax.set_xlabel('Recall')
+ax.set_ylabel('Precision')
+ax.set_title('Precision-Recall Curve - Decision Tree')
+ax.legend()
+plt.tight_layout()
+plt.show()
 ```
 Memperlihatkan trade-off antara Precision dan Recall pada berbagai threshold keputusan.
 
 #### ROC Curve (AUC)
 ```python
-fpr, tpr, thresholds = metrics.roc_curve(y_test, y_pred_proba)
-ax.plot(fpr, tpr, color='firebrick')
+# Plot AUC/ROC Curve
+y_pred_proba = classifier.predict_proba(X_test)[:, 1]
+fpr, tpr, thresholds = metrics.roc_curve(Y_test, y_pred_proba)
+
+fig, ax = plt.subplots()
+ax.plot(fpr, tpr, color='blue', label='Decision Tree Classification')
+ax.set_xlabel('False Positive Rate')
+ax.set_ylabel('True Positive Rate')
+ax.set_title('ROC Curve - Decision Tree')
+plt.box(False)
+ax.legend()
+plt.tight_layout()
+plt.show()
 ```
 Memperlihatkan kemampuan model dalam membedakan dua kelas. Semakin mendekati sudut kiri atas, semakin baik model.
 
@@ -243,25 +265,25 @@ Memperlihatkan kemampuan model dalam membedakan dua kelas. Semakin mendekati sud
 
 ## 📊 Hasil Evaluasi
 
-### Perbandingan Metrik (Test Set 25%)
+### Perbandingan Metrik (Test Set 20%)
 
 | Model | Accuracy | Precision | Recall | F1-Score |
 |-------|----------|-----------|--------|----------|
-| **Decision Tree** | 92.48% | 0.93 | 0.92 | 0.92 |
-| **Naive Bayes** | 92.08% | 0.92 | 0.92 | 0.92 |
-| **SVM** ⭐ | **93.68%** | **0.94** | **0.94** | **0.94** |
+| **Decision Tree** | 92% | 0.93 | 0.92 | 0.92 |
+| **Naive Bayes** | 92% | 0.92 | 0.92 | 0.92 |
+| **SVM** ⭐ | **94%** | **0.94** | **0.94** | **0.94** |
 
 ---
 
 ## 🏆 Kesimpulan
 
-**1. Decision Tree (Accuracy: 92.48%)**
+**1. Decision Tree (Accuracy: 92%)**
 Performa baik dan mudah diinterpretasi. Dari feature importance, `diameter` dan `weight` terbukti menjadi fitur yang paling dominan dalam membedakan orange dari grapefruit. Visualisasi pohon keputusan memudahkan pemahaman logika klasifikasi.
 
-**2. Naive Bayes (Accuracy: 92.08%)**
+**2. Naive Bayes (Accuracy: 92%)**
 Meskipun memiliki asumsi independensi antar fitur (yang tidak sepenuhnya terpenuhi karena `diameter` dan `weight` berkorelasi sangat tinggi), Naive Bayes tetap memberikan performa yang kompetitif dengan waktu training paling cepat di antara ketiga model.
 
-**3. SVM (Accuracy: 93.68%) ✅ TERBAIK**
+**3. SVM (Accuracy: 94%) ✅ TERBAIK**
 SVM dengan kernel RBF menghasilkan akurasi tertinggi. Kernel RBF mampu menangkap batas keputusan non-linear antara dua kelas, sehingga lebih fleksibel dibandingkan model lainnya. Konsisten unggul di semua metrik (Precision, Recall, F1).
 
 > **Rekomendasi:** Gunakan **SVM** jika prioritas utama adalah akurasi. Gunakan **Decision Tree** jika interpretabilitas model lebih penting.
@@ -277,9 +299,9 @@ pip install pandas numpy scikit-learn matplotlib seaborn
 # 2. Pastikan citrus.csv berada di folder yang sama
 
 # 3. Jalankan masing-masing model
-python klasifikasi_naive_bayes.py
-python klasifikasi_decision_tree.py
-python klasifikasi_svm.py
+Citrus_Klasifikasi Model Naive Bayes.ipynb
+Citrus_Klasifikasi Model Decision Tree.ipynb
+Citrus_Klasifikasi Model SVM.ipynb
 ```
 
 ---
@@ -294,6 +316,3 @@ python klasifikasi_svm.py
 | `matplotlib` | Visualisasi grafik |
 | `seaborn` | Visualisasi statistik |
 
----
-
-*UTS Machine Learning – Klasifikasi Buah Citrus (Orange vs Grapefruit)*
