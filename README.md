@@ -11,8 +11,8 @@ Perbandingan Model Klasifikasi/
 ├── citrus.csv                          # Dataset dari Kaggle
 ├── README.md                           # Dokumentasi ini
 │
-├── Citrus_Klasifikasi Model Decision Tree.ipynb    # Model 1: Naive Bayes
-├── Citrus_Klasifikasi Model Naive Bayes.ipynb      # Model 2: Decision Tree
+├── Citrus_Klasifikasi Model Decision Tree.ipynb    # Model 1: Decision Tree
+├── Citrus_Klasifikasi Model Naive Bayes.ipynb      # Model 2: Naive Bayes
 └── Citrus_Klasifikasi Model SVM.ipynb              # Model 3: Support Vector Machine
 
 ```
